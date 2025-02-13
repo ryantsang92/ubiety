@@ -1,136 +1,162 @@
 'use client'
 
-import React from "react";
 import { Presence } from "@/app/lib/types";
+import React from "react";
+import { 
+  ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
+  ReferenceLine,
+  Label
+} from "recharts";
 
 interface PresenceTimelineProps {
   presences: Presence[]
 }
 
 const PresenceTimeline: React.FC<PresenceTimelineProps> = (props) => {
-  const flattenedPresences = props.presences.map((presence) => {
-    return presence.presence_intervals.map((interval) => {
-      return {
-        status: presence.current_status,
-        name: presence.profile,
-        low: interval[0],
-        high: interval[1]
-      }
-    })
-  }).flat()
+  const uniqueProfiles = Array.from(new Set(props.presences.map(p => p.profile)));
+  console.log(uniqueProfiles)
 
-  const flattenedPresencesGroupedByProfile = flattenedPresences.reduce((acc, presence) => {
-    if (!acc[presence.name.uid]) {
-      acc[presence.name.uid] = {
-        name: presence.name,
-        presences: []
-      }
-    }
+  const profileIndexMap: Record<string, number> = uniqueProfiles.reduce((acc, profile, index) => {
+    acc[profile.name] = index + 1; // Start index at 1
+    return acc;
+  }, {} as Record<string, number>);
 
-    acc[presence.name.uid].presences.push(presence)
-    return acc
-  }, {} as Record<number, { name: any, presences: any[] }>)
+  // Convert data to numeric X values
+  const processedData = props.presences.map(p => {
+    const profileIndex = profileIndexMap[p.profile.name];
+    console.log(p)
+    return p.presence_intervals.map(interval => 
+      interval.map(value => (
+        {
+          x: profileIndex,
+          y: value,
+          interval: interval,
+          name: p.profile.name,
+          status: p.current_status
+        }
+      )
+    ));
+  }).flat(2);
 
-  console.log(flattenedPresencesGroupedByProfile)
+  console.log(processedData)
+
+  const minTimestamp = Math.min(...processedData.map(d => d.y));
+  const currentTimestamp = Date.now();
+
+  const CustomXAxisTick: React.FC<{ x?: number; y?: number; payload?: any }> = ({ x, y, payload }) => {
+    const { value } = payload;
+
+    if (!payload) return null;
+    const profile = uniqueProfiles[payload.value - 1]; // Get profile
   
-  const lines = Object.values(flattenedPresencesGroupedByProfile).map((profile, index) => {
-    return {
-      id: index,
-      image: profile.name.photo_url,
-      dots: profile.presences.map((presence) => {
-        return (presence.low + presence.high) / 2 / 100
-      })
+    return (
+      <g transform={`translate(${x},${y - 38})`}>
+        {/* SVG Circle Mask for Rounded Image */}
+        <defs>
+          <clipPath id={`clip-${value}`}>
+            <circle cx="15" cy="15" r="15" />
+          </clipPath>
+        </defs>
+        {profile.photo_url && (
+          // <div
+          //   className="w-7 h-7 rounded-full overflow-hidden border-2 border-blue-500 mr-16"
+          //   onMouseOver={() => console.log(profile)}
+          //   onClick={(e) => console.log(profile)}
+          // >
+            <image
+              href={profile.photo_url}
+              x={0}
+              y={0}
+              width="30"
+              height="30"
+              clipPath={`url(#clip-${value})`}
+            />
+          // </div>
+        )}
+        {/* <text textAnchor="middle" fontSize={12}>
+          {profile.name}
+        </text> */}
+      </g>
+    );
+  };
+
+  const CustomYAxisTick: React.FC<{ payload?: any }> = ({ payload }) => {
+    console.log(new Date(payload.value).toLocaleTimeString())
+    return (
+      <text fontSize={12}>
+        {new Date(payload.value).toLocaleTimeString()}
+      </text>
+    );
+  }
+
+  const CustomTooltip: React.FC = ({ active, payload }) => {
+    if (active && payload && payload.length) {
+      const p = payload[0].payload
+      return (
+        <div className="bg-white p-4 shadow-md rounded-lg text-black">
+          <div className="font-bold">{`${p.name}`}</div>
+          <div>{`Status: ${p.status}`}</div>
+          <div>{`Time: ${new Date(p.interval[0]).toLocaleDateString()} ${new Date(p.interval[0]).toLocaleTimeString()} - ${new Date(p.interval[1]).toLocaleDateString()} ${new Date(p.interval[1]).toLocaleTimeString()}`}</div>
+        </div>
+      );
     }
-  })
-
-  console.log(lines)
-
-  // Generate grid values (0 to 100 by steps of 10)
-  const gridValues = Array.from({ length: 11 }, (_, i) => i * 10);
+  
+    return null;
+  };
 
   return (
-    <div className="w-full h-screen flex items-center justify-center p-8">
-      <div className="relative flex flex-col">
-        <div className="relative flex h-96">
-          {/* Y-axis */}
-          <div className="flex flex-col justify-between mr-4 text-sm text-gray-500">
-            {gridValues.reverse().map((value) => (
-              <div key={value} className="h-4 flex items-center">
-                {value}
-              </div>
-            ))}
-          </div>
+    <ResponsiveContainer width="100%" height={1900}>
+      <ScatterChart>
+        <defs>
+          <linearGradient id="colorUv" x1="1" y1="1" x2="0" y2="0">
+            <stop offset="30%" stopColor="#6584FF" stopOpacity={0.5} />
+            <stop offset="95%" stopColor="#FFFFFF" stopOpacity={0.5} />
+          </linearGradient>
+        </defs>
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis 
+          type="number" 
+          dataKey="x"
+          domain={[0, uniqueProfiles.length + 1]} 
+          height={100}
+          ticks={Object.values(profileIndexMap)}
+          // tickFormatter={(tick) => uniqueProfiles[tick - 1]} // Adjust index lookup
+          tick={<CustomXAxisTick />}
+          orientation="top"
+        />
+        <YAxis
+          type="number"
+          dataKey={'y'}
+          domain={[minTimestamp - 100000000, currentTimestamp + 100000000]}
+          tickCount={20}
+          width={80}
+          tickFormatter={(tick) => new Date(tick).toLocaleDateString()}
+          // tick={<CustomYAxisTick />}
+          // tick={{stroke: 'red', strokeWidth: 2}}
+          interval='equidistantPreserveStart'
+          // includeHidden
+        />
+        <Tooltip
+          cursor={{ strokeDasharray: "3 3" }}
+          content={<CustomTooltip />}
+        />
 
-          {/* Grid and lines container */}
-          <div className="relative">
-            {/* Horizontal grid lines */}
-            {gridValues.map((value) => (
-              <div
-                key={value}
-                className="absolute w-full border-t border-gray-200"
-                style={{
-                  top: `${100 - value}%`,
-                  left: 0,
-                  right: 0
-                }}
-              />
-            ))}
+        {/* Render Custom Vertical Lines */}
+        {processedData.map((d, i) => {
+          return (
+            <ReferenceLine
+              key={i}
+              stroke="green"
+              strokeWidth={2}
+              segment={[{ x: d.x, y: d.interval[0] }, { x: d.x, y: d.interval[1] }]}
+            />
+          )
+        })}
 
-            {/* Vertical lines with dots */}
-            <div className="flex gap-20 h-full relative pl-12 pr-12">
-              {lines.map((line) => (
-                <div key={line.id} className="relative">
-                  {/* Draw line segments between dots */}
-                  {line.dots.map((_, index) => {
-                    if (index === line.dots.length - 1) return null;
-                    const startPos = line.dots[index];
-                    const endPos = line.dots[index + 1];
-                    const height = (endPos - startPos) * 100;
-                    return (
-                      <div
-                        key={index}
-                        className="absolute w-0.5 bg-blue-500"
-                        style={{
-                          top: `${startPos * 100}%`,
-                          height: `${height}%`
-                        }}
-                      />
-                    );
-                  })}
-                  
-                  {/* Dots */}
-                  {line.dots.map((position, index) => (
-                    <div
-                      key={index}
-                      className="absolute w-2.5 h-2.5 bg-blue-500 rounded-full -left-1"
-                      style={{
-                        top: `${position * 100}%`,
-                        transform: 'translateY(-50%)'
-                      }}
-                    />
-                  ))}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* X-axis with images */}
-        <div className="flex gap-12 mt-8 ml-20">
-          {lines.map((line) => (
-            <div key={line.id} className="flex flex-col items-center">
-              <div className="w-7 h-7 rounded-full overflow-hidden border-2 border-blue-500">
-                <img 
-                  src={line.image} 
-                  alt="tick mark" 
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
+        {/* Render Scatter Points */}
+        <Scatter data={processedData} fill="blue" />
+      </ScatterChart>
+    </ResponsiveContainer>
   );
 };
 
