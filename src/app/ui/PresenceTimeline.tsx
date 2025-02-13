@@ -7,6 +7,8 @@ import HighchartsReact from "highcharts-react-official";
 import highchartsDumbbell from "highcharts/modules/dumbbell";
 import HC_more from "highcharts/highcharts-more";
 import { Presence } from "@/app/lib/types";
+import { renderToStaticMarkup } from "react-dom/server";
+import Image from "next/image";
 
 HC_more(Highcharts);
 highchartsDumbbell(Highcharts);
@@ -20,12 +22,18 @@ const PresenceTimeline: React.FC<PresenceTimelineProps> = (props) => {
     return presence.presence_intervals.map((interval) => {
       return {
         status: presence.current_status,
-        name: presence.profile.name,
+        name: presence.profile,
         low: interval[0],
         high: interval[1]
       }
     })
   }).flat()
+
+  console.log(flattenedPresences)
+
+  const categories = flattenedPresences
+    .map((presence) => presence.name)
+    .filter((value, index, self) => self.indexOf(value) === index);
   
   const chartOptions = {
     chart: {
@@ -39,10 +47,33 @@ const PresenceTimeline: React.FC<PresenceTimelineProps> = (props) => {
       text: "Prescence Timelines"
     },
     xAxis: {
+      categories: categories,
       type: "category",
       title: {
         text: "Profiles"
       },
+      opposite: true,
+      labels: {
+        formatter: function() {
+          const profile = this.value
+          console.log(profile.photo_url)
+          return renderToStaticMarkup(
+            <div>
+              {profile.photo_url && (
+                <img src={profile.photo_url} alt={profile.name} style={{ width: '30px', height: '30px' }} />
+                // <Image
+                //   src={profile.photo_url}
+                //   alt={profile.name}
+                //   className="w-8 h-8 rounded-full"
+                //   width={32}
+                //   height={32}
+                // />
+              )}
+              <span>{profile.name}</span>
+            </div>
+          );
+        }
+      }
     },
     yAxis: {
       title: {
@@ -56,7 +87,6 @@ const PresenceTimeline: React.FC<PresenceTimelineProps> = (props) => {
     },
     series: flattenedPresences.map((presence) => {
       return {
-        name: "Profiles",
         data: [{
           name: presence.name,
           low: presence.low,
@@ -80,8 +110,8 @@ const PresenceTimeline: React.FC<PresenceTimelineProps> = (props) => {
         tooltip: {
           enabled: true,
           followPointer: true,
-          headerFormat: '<b>{point.key}</b><br>',
-          pointFormatter: function() {
+          headerFormat: `<b>{point.key.name}</b><br>`,
+          pointFormatter: function(): string {
             return `Status: ${this.status}<br>Time: ${Highcharts.dateFormat('%I:%M %p', this.low)} - ${Highcharts.dateFormat('%I:%M %p', this.high)}`
           }
         },

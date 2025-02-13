@@ -1,3 +1,8 @@
+export enum Status {
+  PRESENT = 'present',
+  ABSENT = 'absent',
+}
+
 export type Profile = {
   uid: number
   created_at: number
@@ -9,5 +14,5 @@ export type Profile = {
 export type Presence = {
   profile: Profile
   presence_intervals: number[][]
-  current_status: string
+  current_status: Status
 }
