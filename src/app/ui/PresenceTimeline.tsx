@@ -17,17 +17,15 @@ interface PresenceTimelineProps {
 
 const PresenceTimeline: React.FC<PresenceTimelineProps> = (props) => {
   const flattenedPresences = props.presences.map((presence) => {
-    return presence.presence_intervals.map((interval, i) => {
+    return presence.presence_intervals.map((interval) => {
       return {
-        // status: presence.current_status,
+        status: presence.current_status,
         name: presence.profile.name,
         low: interval[0],
         high: interval[1]
       }
     })
   }).flat()
-
-  console.log(flattenedPresences)
   
   const chartOptions = {
     chart: {
@@ -40,14 +38,6 @@ const PresenceTimeline: React.FC<PresenceTimelineProps> = (props) => {
     title: {
       text: "Prescence Timelines"
     },
-    // tooltip: {
-    //   shared: true,
-    //   formatter: function() {
-    //     return ''+
-    //             "" +
-    //             'Time: '+ Highcharts.dateFormat('%I:%M %p', this.x);
-    //   }
-    // },
     xAxis: {
       type: "category",
       title: {
@@ -64,27 +54,39 @@ const PresenceTimeline: React.FC<PresenceTimelineProps> = (props) => {
         minute: '%I:%M %p'
       }
     },
-    series: [
-      {
+    series: flattenedPresences.map((presence) => {
+      return {
         name: "Profiles",
-        data: flattenedPresences
-      }
-    ],
-    plotOptions: {
-      series: {
+        data: [{
+          name: presence.name,
+          low: presence.low,
+          high: presence.high,
+          status: presence.status
+        }],
+        connectorWidth: 3,
+        marker: {
+          enabled: true,
+          symbol: "circle",
+          fillColor: "#4ED304"
+        },
+        connectorColor: "#00E4D9",
+        lowColor: "#00E4D9",
         dataLabels: {
           enabled: true,
           formatter: function() {
             return Highcharts.dateFormat('%I:%M %p', this.y);
           }
         },
-        dumbbell: {
-          marker: {
-            enabled: true
+        tooltip: {
+          enabled: true,
+          followPointer: true,
+          headerFormat: '<b>{point.key}</b><br>',
+          pointFormatter: function() {
+            return `Status: ${this.status}<br>Time: ${Highcharts.dateFormat('%I:%M %p', this.low)} - ${Highcharts.dateFormat('%I:%M %p', this.high)}`
           }
-        }
+        },
       }
-    }
+    }),
   }
 
   return (
