@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import Highcharts from "highcharts";
+import Highcharts, { offset } from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 import highchartsDumbbell from "highcharts/modules/dumbbell";
 import HC_more from "highcharts/highcharts-more";
@@ -49,16 +49,20 @@ const PresenceTimeline: React.FC<PresenceTimelineProps> = (props) => {
     xAxis: {
       categories: categories,
       type: "category",
-      title: {
-        text: "Profiles"
-      },
       opposite: true,
       labels: {
+        // align: 'center',
+        // x: -28,
+        // padding: 1,
+        useHTML: true,
         formatter: function() {
           const profile = this.value
-          console.log(profile.photo_url)
           return renderToStaticMarkup(
-            <div>
+            <div
+              className="w-7 h-7 rounded-full overflow-hidden border-2 border-blue-500 mr-16"
+              onMouseOver={() => console.log(profile)}
+              onClick={(e) => console.log(profile)}
+            >
               {profile.photo_url && (
                 <img src={profile.photo_url} alt={profile.name} style={{ width: '30px', height: '30px' }} />
                 // <Image
@@ -69,7 +73,6 @@ const PresenceTimeline: React.FC<PresenceTimelineProps> = (props) => {
                 //   height={32}
                 // />
               )}
-              <span>{profile.name}</span>
             </div>
           );
         }
