@@ -9,10 +9,12 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "highcharts": "^12.1.2",
-    "highcharts-react-official": "^3.2.1",
+    "apexcharts": "^4.4.0",
+    "highcharts": "^9.0.0",
+    "highcharts-react-official": "3.0.0",
     "next": "15.1.7",
     "react": "^19.0.0",
+    "react-apexcharts": "^1.7.0",
     "react-dom": "^19.0.0"
   },
   "devDependencies": {

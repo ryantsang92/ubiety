@@ -1,8 +1,10 @@
 import PresenceTimeline from "@/app/ui/PresenceTimeline";
+import Timeline from "@/app/ui/PresenceTimeline";
 import presence from "@/data/presence.json";
 import profiles from "@/data/profiles.json";
 
 export default function Home() {
+  console.log(presence)
   const profilePresences = Object.entries(presence).map(([key, p]) => {
     return {
       ...p,
@@ -14,6 +16,7 @@ export default function Home() {
   return (
     <div>
       <PresenceTimeline presences={profilePresences}/>
+      {/* <Timeline /> */}
       {/* <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
         <Image
           className="dark:invert"
