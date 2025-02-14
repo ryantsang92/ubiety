@@ -3,7 +3,7 @@
 import React from 'react';
 import profiles from "@/data/profiles.json";
 import TimelineItem from '@/app/ui/TimelineItem';
-import { Presence, Status } from '@/app/lib/types';
+import { Category, Presence, Status } from '@/app/lib/types';
 import { getDateTime, currentTimestamp, minTimestamp } from '@/app/lib/utils';
 
 interface PresenceProps {
@@ -28,6 +28,7 @@ const PresenceTimeline: React.FC<PresenceProps> = (props) => {
             key={profile.uid}
             name={profile.name}
             photoUrl={profile.photo_url}
+            category={profile.category as Category}
             intervals={props.presenceData[profile.uid]?.presence_intervals}
             currentStatus={props.presenceData[profile.uid]?.current_status as Status}
           />

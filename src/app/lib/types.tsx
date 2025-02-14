@@ -3,6 +3,11 @@ export enum Status {
   ABSENT = 'absent',
 }
 
+export enum Category {
+  FAMILY = 'family',
+  VISITOR = 'visitor',
+}
+
 export type Profile = {
   uid: number
   created_at: number
