@@ -1,4 +1,5 @@
 import React from 'react';
+// import Image from 'next/image';
 import Avatar from '@/app/ui/Avatar';
 import { currentTimestamp, getPositionPercentage } from '@/app/lib/utils';
 import { Status } from '@/app/lib/types';
@@ -12,14 +13,12 @@ interface TimelineItemProps {
 }
 
 const TimelineItem: React.FC<TimelineItemProps> = ({ name, photoUrl, intervals, currentStatus }) => {
-  console.log(name, photoUrl, intervals, currentStatus);
-
   // if the current status is present, update the last interval to the current timestamp
   if (currentStatus === Status.PRESENT) {
-    const max = Math.max(...intervals.flat());
+    const maxTimestamp = Math.max(...intervals.flat());
 
     intervals = intervals.map(interval => 
-      interval.map(value => value === max ? currentTimestamp : value)
+      interval.map(value => value === maxTimestamp ? currentTimestamp : value)
     );
   }
 
@@ -32,6 +31,7 @@ const TimelineItem: React.FC<TimelineItemProps> = ({ name, photoUrl, intervals, 
             name={name}
             currentStatus={currentStatus}
           >
+            {/* <Image src={photoUrl} alt={name} layout="fill" objectFit="cover" className="rounded-full" /> */}
             <img src={photoUrl} alt={name} className="w-full h-full object-cover rounded-full" />
           </Avatar>
         ) : (
@@ -61,30 +61,6 @@ const TimelineItem: React.FC<TimelineItemProps> = ({ name, photoUrl, intervals, 
                 index={index}
                 getPositionPercentage={getPositionPercentage}
               />
-              // <>
-              //   <IntervalTooltip interval={interval} name={name} key={index}>
-              //     <div
-              //       key={index}
-              //       className="absolute w-0.5 bg-blue-500"
-              //       style={{
-              //         top: `${start}%`,
-              //         height: `${height}%`
-              //       }}
-              //     />
-              //   </IntervalTooltip>
-              //   <IntervalTooltip interval={interval} name={name} key={index}>
-              //     <div
-              //       className="absolute w-2 h-2 bg-blue-500 rounded-full -left-[3px]"
-              //       style={{ top: `${getPositionPercentage(interval[0])}%` }}
-              //     />
-              //   </IntervalTooltip>
-              //   <IntervalTooltip interval={interval} name={name} key={index}>
-              //     <div
-              //       className="absolute w-2 h-2 bg-blue-500 rounded-full -left-[3px]"
-              //       style={{ top: `${getPositionPercentage(interval[1])}%` }}
-              //     />
-              //   </IntervalTooltip>
-              // </>
             );
           })}
         </div>
