@@ -4,10 +4,10 @@ import React from "react";
 interface IntervalProps {
   interval: number[];
   start: number;
+  end: number;
   height: number;
   name: string;
   index: number;
-  getPositionPercentage: (value: number) => number;
 }
 
 const Interval: React.FC<IntervalProps> = (props) => {
@@ -25,13 +25,13 @@ const Interval: React.FC<IntervalProps> = (props) => {
       <IntervalTooltip interval={props.interval} name={props.name} key={`start-${props.index}`}>
         <div
           className="absolute w-2 h-2 bg-blue-500 rounded-full -left-[3px]"
-          style={{ top: `${props.getPositionPercentage(props.interval[0])}%` }}
+          style={{ top: `${props.start}%` }}
         />
       </IntervalTooltip>
       <IntervalTooltip interval={props.interval} name={props.name} key={`end-${props.index}`}>
         <div
           className="absolute w-2 h-2 bg-blue-500 rounded-full -left-[3px]"
-          style={{ top: `${props.getPositionPercentage(props.interval[1])}%` }}
+          style={{ top: `${props.end}%` }}
         />
       </IntervalTooltip>
     </>

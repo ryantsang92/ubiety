@@ -81,10 +81,10 @@ const TimelineItem: React.FC<TimelineItemProps> = ({ name, photoUrl, category, i
                 key={index}
                 interval={interval}
                 start={start}
+                end={end}
                 height={height}
                 name={name}
                 index={index}
-                getPositionPercentage={getPositionPercentage}
               />
             );
           })}
