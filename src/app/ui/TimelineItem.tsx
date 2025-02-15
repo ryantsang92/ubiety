@@ -1,5 +1,5 @@
 import React from 'react';
-// import Image from 'next/image';
+import Image from 'next/image';
 import Avatar from '@/app/ui/Avatar';
 import { currentTimestamp, getPositionPercentage } from '@/app/lib/utils';
 import { Category, Status } from '@/app/lib/types';
@@ -48,8 +48,13 @@ const TimelineItem: React.FC<TimelineItemProps> = ({ name, photoUrl, category, i
             name={name}
             currentStatus={currentStatus}
           >
-            {/* <Image src={photoUrl} alt={name} layout="fill" objectFit="cover" className="rounded-full" /> */}
-            <img src={photoUrl} alt={name} className="w-full h-full object-cover rounded-full" />
+            <Image
+              src={photoUrl}
+              alt={name}
+              width={40}
+              height={40}
+              className="rounded-full"
+            />
           </Avatar>
         ) : (
           <Avatar
