@@ -39,7 +39,10 @@ const TimelineItem: React.FC<TimelineItemProps> = ({ name, photoUrl, category, i
 
   return (
     <div className="flex flex-col items-center w-32 h-full pl-4 pr-4 min-w-[8rem] max-w-[8rem]">
-      <div className="mb-1">
+      <div
+        className="mb-1"
+        data-testid="avatar"
+      >
         {photoUrl ? (
           <Avatar
             name={name}
@@ -59,7 +62,10 @@ const TimelineItem: React.FC<TimelineItemProps> = ({ name, photoUrl, category, i
         )}
       </div>
       <div className="relative h-full w-0.5">
-        <div className="absolute top-0 left-0 w-0.5 h-full bg-gray-200">
+        <div
+          className="absolute top-0 left-0 w-0.5 h-full bg-gray-200"
+          data-testid="intervals"
+        >
           {intervals.map((interval, index) => {
             const start = getPositionPercentage(interval[0]);
             const end = getPositionPercentage(interval[1]);

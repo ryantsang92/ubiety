@@ -30,7 +30,9 @@ const Avatar: React.FC<React.PropsWithChildren<AvatarProps>> = (props) => {
           border-4
           ${props.currentStatus === Status.PRESENT ? `border-green-500` : `border-blue-500`}
           overflow-hidden
-          ${props.className}`} 
+          ${props.className}
+        `}
+        data-testid="avatar-parent"
       >
         {props.children}
       </div>
