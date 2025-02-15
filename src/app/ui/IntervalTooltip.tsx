@@ -21,7 +21,7 @@ const IntervalTooltip: React.FC<React.PropsWithChildren<IntervalTooltipProps>> =
           </div>
         </div>
       }
-      // key={props.key}
+      followCursor
     >
       {props.children as React.ReactElement}
     </Tooltip>

@@ -12,16 +12,19 @@ interface AvatarProps {
 
 const Avatar: React.FC<React.PropsWithChildren<AvatarProps>> = (props) => {
   return (
-    <Tooltip title={
-      <div className='flex flex-col'>
-        <div className="font-bold">
-          {props.name}
+    <Tooltip
+      title={
+        <div className='flex flex-col'>
+          <div className="font-bold">
+            {props.name}
+          </div>
+          <div>
+            {`Status: ${beautifyStatus(props.currentStatus)}`}
+          </div>
         </div>
-        <div>
-          {`Status: ${beautifyStatus(props.currentStatus)}`}
-        </div>
-      </div>
-    }>
+      }
+      followCursor
+    >
       <div 
         className={`
           w-10
