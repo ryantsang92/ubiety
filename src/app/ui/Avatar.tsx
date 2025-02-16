@@ -7,7 +7,7 @@ import { beautifyStatus } from "@/app/lib/utils";
 interface AvatarProps {
   className?: string;
   name: string;
-  currentStatus: string;
+  currentStatus: Status;
 }
 
 const Avatar: React.FC<React.PropsWithChildren<AvatarProps>> = (props) => {

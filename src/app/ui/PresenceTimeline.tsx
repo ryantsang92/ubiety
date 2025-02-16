@@ -1,14 +1,13 @@
 'use client'
 
 import React from 'react';
-import profiles from "@/data/profiles.json";
 import TimelineItem from '@/app/ui/TimelineItem';
-import { Category, Presence, Status } from '@/app/lib/types';
+import { Category, Presence, Profile, Status } from '@/app/lib/types';
 import { getDateTime, maxTimestamp, minTimestamp } from '@/app/lib/utils';
 
 interface PresenceProps {
   presenceData: Presence;
-  profileData: typeof profiles;
+  profileData: Profile[];
 }
 
 const PresenceTimeline: React.FC<PresenceProps> = (props) => {
