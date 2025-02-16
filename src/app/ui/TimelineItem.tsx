@@ -1,7 +1,7 @@
 import React from 'react';
 import Image from 'next/image';
 import Avatar from '@/app/ui/Avatar';
-import { currentTimestamp, getPositionPercentage } from '@/app/lib/utils';
+import { getPositionPercentage, currentTimestamp } from '@/app/lib/utils';
 import { Category, Status } from '@/app/lib/types';
 import Interval from '@/app/ui/Interval';
 import GroupIcon from '@mui/icons-material/Group';
@@ -17,7 +17,7 @@ interface TimelineItemProps {
 }
 
 const TimelineItem: React.FC<TimelineItemProps> = ({ name, photoUrl, category, intervals, currentStatus }) => {
-  // if the current status is present, update the last interval to the current timestamp
+  // if the current status is present, update the max interval value to the current timestamp
   if (currentStatus === Status.PRESENT) {
     const maxTimestamp = Math.max(...intervals.flat());
 

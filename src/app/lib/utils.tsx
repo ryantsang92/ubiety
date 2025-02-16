@@ -4,6 +4,11 @@ import presence from "@/data/presence.json";
 export const currentTimestamp = new Date().getTime();
 export const minTimestamp = Math.min(...Object.values(presence).map((p) => p.presence_intervals).flat(2))
 
+const hasPresentProfile = !!Object.values(presence).find((p) => p.current_status === Status.PRESENT);
+export const maxTimestamp = hasPresentProfile
+  ? currentTimestamp
+  : Math.max(...Object.values(presence).map((p) => p.presence_intervals).flat(2))
+
 // Convert timestamp to date and time 
 export const getDateTime = (timestamp: number): string => {
   const date = new Date(timestamp);
@@ -12,7 +17,7 @@ export const getDateTime = (timestamp: number): string => {
 
 // Convert timestamp to percentage of vertical position
 export const getPositionPercentage = (timestamp: number): number => {  
-  const total = currentTimestamp - minTimestamp;
+  const total = maxTimestamp - minTimestamp;
   return ((timestamp - minTimestamp) / total) * 100;
 };
 

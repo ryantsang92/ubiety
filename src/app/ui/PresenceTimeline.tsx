@@ -4,7 +4,7 @@ import React from 'react';
 import profiles from "@/data/profiles.json";
 import TimelineItem from '@/app/ui/TimelineItem';
 import { Category, Presence, Status } from '@/app/lib/types';
-import { getDateTime, currentTimestamp, minTimestamp } from '@/app/lib/utils';
+import { getDateTime, maxTimestamp, minTimestamp } from '@/app/lib/utils';
 
 interface PresenceProps {
   presenceData: Presence;
@@ -25,7 +25,7 @@ const PresenceTimeline: React.FC<PresenceProps> = (props) => {
           className='relative text-black top-8 text-right text-xs bottom-8'
           data-testid="current-timestamp"
         >
-          {getDateTime(currentTimestamp)}
+          {getDateTime(maxTimestamp)}
         </div>
       </div>
       {props.profileData.map((profile) => {
