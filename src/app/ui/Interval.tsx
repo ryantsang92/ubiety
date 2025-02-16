@@ -13,6 +13,7 @@ interface IntervalProps {
 const Interval: React.FC<IntervalProps> = (props) => {
   return (
     <IntervalTooltip interval={props.interval} name={props.name} key={`line-${props.index}`}>
+      {/* interval line */}
       <div
         className="absolute w-0.5 bg-blue-500"
         style={{
@@ -20,10 +21,12 @@ const Interval: React.FC<IntervalProps> = (props) => {
           height: `${props.height}%`
         }}
       />
+      {/* interval start point */}
       <div
         className="absolute w-2 h-2 bg-blue-500 rounded-full -left-[3px]"
         style={{ top: `${props.start}%` }}
       />
+      {/* interval end point */}
       <div
         className="absolute w-2 h-2 bg-blue-500 rounded-full -left-[3px]"
         style={{ top: `${props.end}%` }}

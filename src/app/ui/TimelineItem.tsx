@@ -72,8 +72,11 @@ const TimelineItem: React.FC<TimelineItemProps> = ({ name, photoUrl, category, i
           data-testid="intervals"
         >
           {intervals.map((interval, index) => {
+            // calculate the start and end position of the interval
             const start = getPositionPercentage(interval[0]);
             const end = getPositionPercentage(interval[1]);
+
+            // calculate the height of the interval
             const height = end - start;
             
             return (
